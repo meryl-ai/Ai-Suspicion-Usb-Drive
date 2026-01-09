@@ -5,10 +5,9 @@ from sklearn.ensemble import IsolationForest
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-# =========================
+
 # NORMAL USB DATA FOR AI
-# =========================
-# Each row: [total files, exe files, hidden files]
+
 normal_usb_data = np.array([
     [130, 0, 0],
     [150, 0, 1],
@@ -18,14 +17,13 @@ normal_usb_data = np.array([
 model = IsolationForest(contamination=0.2, random_state=42)
 model.fit(normal_usb_data)
 
-# =========================
+
 # SYSTEM FILES TO IGNORE
-# =========================
+
 ignore_files = [".DS_Store", "Thumbs.db", "desktop.ini"]
 
-# =========================
+
 # SCAN USB FILES
-# =========================
 def scan_usb(path):
     total_files = 0
     exe_files = 0
@@ -42,16 +40,15 @@ def scan_usb(path):
             file_list.append(os.path.join(root, file))
     return [total_files, exe_files, hidden_files], file_list
 
-# =========================
+
 # AI SUSPICION SCORE
-# =========================
+
 def ai_suspicion_score(features):
     score = -model.decision_function([features])[0]
     return min(100, max(0, score * 100))
 
-# =========================
+
 # FLAG SUSPICIOUS FILES
-# =========================
 def check_file_suspicious(file_path):
     filename = os.path.basename(file_path)
     
@@ -72,9 +69,9 @@ def check_file_suspicious(file_path):
     
     return False
 
-# =========================
+
 # PROCESS USB
-# =========================
+
 def process_usb(drive_letter):
     print(f"\nScanning USB at {drive_letter}...\n")
 
@@ -108,9 +105,8 @@ def process_usb(drive_letter):
             print(f"⚠ Suspicious file detected: {s}")
         print(f"\nUSB AI suspicion score: {round(score,2)} / 100")
 
-# =========================
+
 # WATCHDOG FOR NEW USB
-# =========================
 class USBHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
@@ -137,8 +133,8 @@ def monitor_usb(drive_letter="E:\\"):
         observer.stop()
     observer.join()
 
-# =========================
+
 # RUN PROGRAM
-# =========================
+
 if __name__ == "__main__":
     monitor_usb("E:\\")  # change to your USB drive letter
